@@ -202,6 +202,15 @@ Func::Func(ID* id)
 	::Ref(type);
 	}
 
+Func::Func(string n, FuncType* t)
+	{
+	type = t;
+	name = n;
+	unique_id = unique_ids.size();
+	unique_ids.emplace_back(this);
+
+	::Ref(type);
+	}
 Func::~Func()
 	{
 	Unref(type);
@@ -337,6 +346,8 @@ Func* Func::DoClone()
 	{
 	// By default, ok just to return a reference. Func does not have any state
 	// that is different across instances.
+
+	return new Func(Name(),FType()->ShallowClone());
 	::Ref(this);
 	return this;
 	}
@@ -817,7 +828,10 @@ BroFunc* BroFunc::DoClone()
 	{
 	// BroFunc could hold a closure. In this case a clone of it must
 	// store a copy of this closure.
-	BroFunc* other = new BroFunc(func,type);
+	//printf("Cloning Func %s\n",func->Name());
+	Func* f = func->DoClone();
+	BroFunc* other = new BroFunc(f,type);
+	f->AddOverload(other);
 	CopyStateInto(other);
 
 	other->frame_size = frame_size;

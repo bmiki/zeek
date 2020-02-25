@@ -141,7 +141,7 @@ public:
 	void DescribeDebug(ODesc* d, const val_list* args) const;
 
 protected:
-
+	Func(std::string n, FuncType* t);
 	FuncType* type;
 	std::string name;
 	uint32_t unique_id;
