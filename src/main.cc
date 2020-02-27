@@ -709,6 +709,14 @@ int main(int argc, char** argv)
 
 	if ( options.pcap_filter )
 		{
+		//bugfix-#158 - if base/frameworks/packet-filter is not loaded -f switch silently fails
+		Plugin* packet_filter_plugin = plugin_mgr->LookupPluginByPath("base/frameworks/packet-filter");
+		if ( packet_filter_plugin == nullptr )
+		      {
+		      fprintf(stderr, "failed to get path to executable");
+		      exit(1);
+		      }
+
 		ID* id = global_scope()->Lookup("cmd_line_bpf_filter");
 
 		if ( ! id )
