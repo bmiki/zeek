@@ -26,7 +26,7 @@ static Val* init_val(Expr* init, const BroType* t, Val* aggr)
 
 static void init_func_id (ID* id, FuncImpl* fv, int overload_idx, FuncType* t, bool redef = false)
 	{
-	bool debug = false; // streq(id->Name(),"myhook5");
+	bool debug = false; //streq(id->Name(),"Log::default_ext_func");
 	if (debug) printf("DEBUG IN INIT FUNC ID\n");
 
 	Func* f;
@@ -58,6 +58,9 @@ static void init_func_id (ID* id, FuncImpl* fv, int overload_idx, FuncType* t, b
 		printf("DEBUG REDEF\n");
 		FuncType* ft = fv->GetType();
 		FuncType* idt = id->Type()->AsFuncType();
+		if ( idt->YieldType() && idt->YieldType()->Tag() == TYPE_ANY )
+			idt->SetYieldType(ft->YieldType());
+
 		for ( FuncOverload* o: t->Overloads() )
 			{
 			FuncOverload* fo = ft->GetOverload(o->decl->args);
@@ -97,6 +100,9 @@ static void init_func_id (ID* id, FuncImpl* fv, int overload_idx, FuncType* t, b
 		{
 		FuncType* ft = fv->GetType();
 		FuncType* idt = id->Type()->AsFuncType();
+		if ( idt->YieldType() && idt->YieldType()->Tag() == TYPE_ANY )
+			idt->SetYieldType(ft->YieldType());
+
 		for ( FuncOverload* o: t->Overloads() )
 			{
 			FuncOverload* fo = ft->GetOverload(o->decl->args);
@@ -127,7 +133,7 @@ static void init_func_id (ID* id, FuncImpl* fv, int overload_idx, FuncType* t, b
 static void make_var(ID* id, BroType* t, init_class c, Expr* init,
 			attr_list* attr, decl_type dt, int do_init)
 	{
-	bool debug = false; //streq(id->Name(),"myhook5");
+	bool debug = false; //streq(id->Name(),"Log::default_ext_func");
 	if (debug)
 		printf("debug in make_var\n");
 	if ( id->Type() )
@@ -286,7 +292,8 @@ static void make_var(ID* id, BroType* t, init_class c, Expr* init,
 		}
 
 	if (debug)
-		printf("#2");
+		printf("#2 - %i",init && ((c == INIT_EXTRA && id->FindAttr(ATTR_ADD_FUNC)) ||
+		              (c == INIT_REMOVE && id->FindAttr(ATTR_DEL_FUNC)) ));
 
 	if ( do_init )
 		{
@@ -659,7 +666,7 @@ TraversalCode OuterIDBindingFinder::PostExpr(const Expr* expr)
 void end_func(Stmt* body)
 	{
 	auto ingredients = std::make_unique<function_ingredients>(pop_scope(), body);
-	bool debug = false; //streq(ingredients->id->Name(), "myhook5");
+	bool debug = false; //streq(ingredients->id->Name(), "Log::De");
 
 	if ( streq(ingredients->id->Name(), "anonymous-function") )
 		{
