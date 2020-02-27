@@ -713,7 +713,7 @@ int main(int argc, char** argv)
 		Plugin* packet_filter_plugin = plugin_mgr->LookupPluginByPath("base/frameworks/packet-filter");
 		if ( packet_filter_plugin == nullptr )
 		      {
-		      fprintf(stderr, "failed to get path to executable");
+		      fprintf(stderr, "Could not load base/frameworks/packet-filter.");
 		      exit(1);
 		      }
 
